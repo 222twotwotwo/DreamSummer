@@ -11,6 +11,12 @@ const stats = [
     <div class="hero-bg" aria-hidden="true">
       <img :src="'./images/bg-hero.jpg'" alt="" />
     </div>
+    <!-- 夏日装饰：夏季限定印章卡（遮挡图库水印） -->
+    <div class="hero-stamp" aria-hidden="true">
+      <p class="stamp-year">2026 · SUMMER LIMITED</p>
+      <span class="stamp-seal">逐梦之夏</span>
+      <p class="stamp-en">DREAM IN SUMMER</p>
+    </div>
     <!-- 夏日装饰：底部波浪 -->
     <svg class="hero-waves" viewBox="0 0 1440 24" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 12 Q 60 2 120 12 T 240 12 T 360 12 T 480 12 T 600 12 T 720 12 T 840 12 T 960 12 T 1080 12 T 1200 12 T 1320 12 T 1440 12" />
