@@ -61,20 +61,44 @@ const idx = ref(0);
 
 const pad = (n: number): string => String(n).padStart(2, '0');
 
-/* ---------- 滚动轨道驱动（sticky + 400vh 轨道） ----------
- * 轨道总高 400vh，section sticky 吸顶。
- * 页面滚轮始终有效：轨道内滚动进度决定当前 slide，
- * 走完第 4 屏后轨道结束，页面自然继续向下滚动。 */
+/* ---------- 滚动驱动 ----------
+ * 桌面（>960px）：400vh 滚动轨道 + section 吸顶，轨道内滚动进度决定当前 slide。
+ * 移动（≤960px）：section 自身高度 = 一屏，.showcase-inner 变成整屏吸附滚动区
+ *   （CSS scroll-snap），一屏一屏切换，与桌面观感一致；不再把四屏铺开。
+ * 两种模式都用同一套 idx / 圆点 / 页码。 */
 const rootEl = ref<HTMLElement | null>(null);
+const innerEl = ref<HTMLElement | null>(null);
 let ticking = false;
 
 function isDesktop(): boolean {
   return window.innerWidth > 960;
 }
 
+/** 移动端：找出当前贴在容器顶部的 slide 序号 */
+function updateMobileIdx(): void {
+  const inner = innerEl.value;
+  if (!inner) return;
+  const nodes = inner.querySelectorAll<HTMLElement>('.slide');
+  if (!nodes.length) return;
+  let best = 0;
+  let bestDist = Number.POSITIVE_INFINITY;
+  nodes.forEach((el, i) => {
+    const dist = Math.abs(el.offsetTop - inner.scrollTop);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = i;
+    }
+  });
+  idx.value = Math.min(slides.length - 1, best);
+}
+
 function updateFromScroll(): void {
+  if (!isDesktop()) {
+    updateMobileIdx();
+    return;
+  }
   const track = rootEl.value;
-  if (!track || !isDesktop()) return;
+  if (!track) return;
   const rect = track.getBoundingClientRect();
   const total = track.offsetHeight - window.innerHeight;
   if (total <= 0) return;
@@ -92,35 +116,49 @@ function onScroll(): void {
   });
 }
 
-/* 圆点直达：把轨道滚到对应 slide 的进度中点 */
+/* 圆点直达：桌面滚页面到对应进度中点；移动端滚动吸附容器到对应 slide 顶部 */
 function scrollToSlide(n: number): void {
-  const track = rootEl.value;
-  if (!track || !isDesktop()) {
+  if (!isDesktop()) {
+    const inner = innerEl.value;
+    const target = inner?.querySelectorAll<HTMLElement>('.slide')[n];
+    if (inner && target) {
+      inner.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
+    }
     idx.value = n;
     return;
   }
+  const track = rootEl.value;
+  if (!track) return;
   const rect = track.getBoundingClientRect();
   const total = track.offsetHeight - window.innerHeight;
   const top = window.scrollY + rect.top + ((n + 0.5) / slides.length) * total;
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
+/** 吸附滚动容器的 DOM 引用：onUnmounted 时模板 ref 可能已清空，故单独留存 */
+let innerNode: HTMLElement | null = null;
+
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
+  // 移动端：吸附滚动发生在 .showcase-inner 内部，页面滚动事件不会触发
+  innerNode = innerEl.value;
+  innerNode?.addEventListener('scroll', onScroll, { passive: true });
   updateFromScroll();
 });
 
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
   window.removeEventListener('resize', onScroll);
+  innerNode?.removeEventListener('scroll', onScroll);
+  innerNode = null;
 });
 </script>
 
 <template>
   <div ref="rootEl" class="showcase-track">
     <section id="showcase" class="showcase">
-      <div class="showcase-inner">
+      <div ref="innerEl" class="showcase-inner">
         <article
           v-for="(s, i) in slides"
           :key="s.num"
