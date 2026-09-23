@@ -14,7 +14,6 @@ const phases = [
 <template>
   <section id="timeline" class="section">
     <SectionHead
-      eyebrow="Schedule · 时间安排"
       title="一学期的节奏"
       desc="各阶段具体时间以 OA 系统公告为准"
     />

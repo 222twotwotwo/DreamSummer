@@ -10,7 +10,6 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 interface Slide {
   num: string;
-  en: string;
   title: string;
   desc: string;
   points: string[];
@@ -21,7 +20,6 @@ interface Slide {
 const slides: Slide[] = [
   {
     num: '01',
-    en: 'PROJECT BIDDING',
     title: '项目招标',
     desc: '实验室老师与项目团队发布真实课题，由导师审核，确保课题真实、可执行、有孵化价值。',
     points: ['课题名称与背景', '七项发布要素一次讲清', '真实 · 可执行 · 有孵化价值'],
@@ -30,7 +28,6 @@ const slides: Slide[] = [
   },
   {
     num: '02',
-    en: 'LEARNING ASSESSMENT',
     title: '学习考核',
     desc: '以过程留痕为基础，六大维度综合评价学习意愿，拒绝"简历面试"式的片面观察。',
     points: ['申请材料 · 周会参与 · 任务完成', '知识分享 · 月报质量 · 导师评价', '全过程 OA 系统留痕'],
@@ -39,7 +36,6 @@ const slides: Slide[] = [
   },
   {
     num: '03',
-    en: 'TALENT RECRUITMENT',
     title: '人才招募',
     desc: '优秀参与者进入实验室，成为项目骨干或新生力军，在真实项目中赢得直通资格。',
     points: ['负责人推荐资格', '结项后发布实验室招募令', '绿色通道 · 竞赛推荐'],
@@ -48,7 +44,6 @@ const slides: Slide[] = [
   },
   {
     num: '04',
-    en: 'PROJECT INCUBATION',
     title: '项目孵化',
     desc: '立项推进、周会月报跟进、结项评审，优秀项目进入下一期孵化或推荐参赛。',
     points: ['周会 · 月报 · 中期检查', '结项答辩：优秀 / 合格 / 不合格', '成果沉淀至项目库续期孵化'],
@@ -174,13 +169,10 @@ onUnmounted(() => {
             />
             <span class="media-tag" aria-hidden="true">
               <b>逐梦之夏</b>
-              <i>DREAM IN SUMMER</i>
             </span>
           </div>
           <div class="slide-body">
-            <p class="slide-en">{{ s.en }}</p>
             <h3 class="slide-title">{{ s.title }}</h3>
-            <span class="slide-line"></span>
             <p class="slide-desc">{{ s.desc }}</p>
             <ul class="slide-points">
               <li v-for="p in s.points" :key="p">{{ p }}</li>

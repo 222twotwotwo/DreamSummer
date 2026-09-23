@@ -24,7 +24,6 @@ const steps = [
 <template>
   <section id="flow" class="section">
     <SectionHead
-      eyebrow="Process · 核心流程"
       title="四步走完全程"
       desc="过程材料在 OA 系统内全部留痕，作为考核与评审的客观依据"
     />

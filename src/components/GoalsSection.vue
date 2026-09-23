@@ -12,7 +12,6 @@ const goals = [
 <template>
   <section id="goals" class="section">
     <SectionHead
-      eyebrow="Goals · 活动目标"
       title="我们想做成什么"
       desc="以课题项目为试金石，考核学习意愿，孵化优质项目，招募实验室生力军"
     />

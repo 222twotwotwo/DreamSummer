@@ -21,7 +21,6 @@ const incentives = [
 <template>
   <section id="assess" class="section">
     <SectionHead
-      eyebrow="Assessment · 考核激励"
       title="考核与激励"
       desc="项目即考核：在真实任务中观察你的学习意愿"
     />

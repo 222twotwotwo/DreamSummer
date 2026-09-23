@@ -17,7 +17,6 @@ const modules = [
 <template>
   <section id="modules" class="section">
     <SectionHead
-      eyebrow="Platform · 网站平台"
       title="OA 课题项目招标网站"
       desc="项目发布 → 自主申请 → 系统跟进 → 完成结项，全流程线上化"
     />

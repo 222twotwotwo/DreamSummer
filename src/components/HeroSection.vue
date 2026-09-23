@@ -14,7 +14,6 @@ const stats = [
     <!-- 夏日装饰：右下角品牌角条（遮挡图库水印） -->
     <span class="hero-corner-tag" aria-hidden="true">
       <b>逐梦之夏</b>
-      <i>DREAM IN SUMMER</i>
     </span>
     <!-- 夏日装饰：底部波浪 -->
     <svg class="hero-waves" viewBox="0 0 1440 24" preserveAspectRatio="none" aria-hidden="true">
@@ -22,9 +21,7 @@ const stats = [
       <path d="M0 18 Q 60 10 120 18 T 240 18 T 360 18 T 480 18 T 600 18 T 720 18 T 840 18 T 960 18 T 1080 18 T 1200 18 T 1320 18 T 1440 18" opacity="0.55" />
     </svg>
     <div class="hero-content">
-      <p class="hero-eyebrow">逐梦创新实验室 · 2026 秋季学期</p>
       <h1 class="hero-title">逐梦之夏</h1>
-      <p class="hero-sub-en">DREAM IN SUMMER, BUILD THE FUTURE</p>
       <p class="hero-slogan">课题项目招标 · 学习意愿考核 · 人才招募与项目孵化</p>
       <p class="hero-desc">
         以项目招标为入口、以学习考核为标尺、以人才招募为目的、以项目孵化为主线——

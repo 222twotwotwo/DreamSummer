@@ -43,7 +43,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll));
   <q-header class="nav" :class="{ scrolled }">
     <q-toolbar class="nav-inner">
       <a class="logo" href="#hero">
-        <span class="logo-text">逐梦之夏 <em>DREAM IN SUMMER</em></span>
+        <span class="logo-text">逐梦之夏</span>
       </a>
       <q-space class="nav-space" />
       <nav class="nav-links">
