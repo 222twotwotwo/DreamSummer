@@ -160,6 +160,60 @@ function updateFromScroll(): void {
   idx.value = target;
 }
 
+/* ---------- 滚轮翻屏（一格 = 一屏，参考 deck 的 wheel paging 手感）----------
+ * showcase 吸顶期间接管滚轮：一格滚轮完整切换一屏，冷却期内忽略
+ * 触控板 / 鼠标惯性，动画未结束时不再累计。首屏向上、末屏向下时
+ * 不拦截，交还原生滚动，让页面自然进出本区块。
+ * 移动端触摸滚动不受影响，仍走原生滚动 + 进度换算。 */
+const WHEEL_COOLDOWN = 780;   // 一屏动画 + 余量，期间忽略惯性
+const WHEEL_MIN_DELTA = 12;   // 过滤微小抖动
+let wheelUnlockedAt = 0;
+
+/* showcase 是否正处于吸顶区间（滚轮接管条件） */
+function isPinned(): boolean {
+  const track = rootEl.value;
+  if (!track) return false;
+  const rect = track.getBoundingClientRect();
+  return rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
+}
+
+function onWheel(e: WheelEvent): void {
+  if (e.ctrlKey || e.metaKey || e.altKey) return; // 捏合 / 浏览器缩放
+  if (!isPinned()) return;
+  let d = e.deltaY;
+  if (e.deltaMode === 1) d *= 32;
+  else if (e.deltaMode === 2) d *= 800;
+  if (Math.abs(d) < WHEEL_MIN_DELTA) {
+    e.preventDefault(); // 抖动也不让页面原生滚动破坏吸附
+    return;
+  }
+  const dir = d > 0 ? 1 : -1;
+  const target = idx.value + dir;
+  // 边界放行：首屏向上滚、末屏向下滚 → 交还原生滚动离开本区块
+  if (target < 0 || target >= slides.length) return;
+  e.preventDefault();
+  const now = Date.now();
+  if (now < wheelUnlockedAt) return; // 冷却期：忽略惯性，一格只切一屏
+  wheelUnlockedAt = now + WHEEL_COOLDOWN;
+  scrollToSlide(target);
+}
+
+/* 键盘翻屏：吸顶期间 ↑↓ / PgUp / PgDn 与滚轮同手感（一格 = 一屏）。
+   焦点在输入框 / 可编辑区域时不接管，修饰键组合（选区、缩放）不碰。 */
+function onKeyDown(e: KeyboardEvent): void {
+  const t = e.target as HTMLElement | null;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+  if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+  let dir = 0;
+  if (e.key === 'ArrowDown' || e.key === 'PageDown') dir = 1;
+  else if (e.key === 'ArrowUp' || e.key === 'PageUp') dir = -1;
+  if (!dir || !isPinned()) return;
+  const target = idx.value + dir;
+  if (target < 0 || target >= slides.length) return; // 边界交还原生滚动
+  e.preventDefault();
+  scrollToSlide(target);
+}
+
 function onScroll(): void {
   if (ticking) return;
   ticking = true;
@@ -195,6 +249,8 @@ watch(idx, (v) => { showcaseIndex.value = v; });
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
+  window.addEventListener('wheel', onWheel, { passive: false });
+  window.addEventListener('keydown', onKeyDown);
   document.addEventListener('click', onDocClick);
   showcaseTotal.value = slides.length;
   registerShowcaseJump(scrollToSlide);
@@ -204,6 +260,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
   window.removeEventListener('resize', onScroll);
+  window.removeEventListener('wheel', onWheel);
+  window.removeEventListener('keydown', onKeyDown);
   document.removeEventListener('click', onDocClick);
   registerShowcaseJump(null);
 });
