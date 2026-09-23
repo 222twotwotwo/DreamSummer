@@ -274,12 +274,14 @@ onUnmounted(() => {
               :src="s.img"
               :alt="s.imgAlt"
               :loading="i === 0 ? 'eager' : 'lazy'"
+              v-reveal
             />
             <span class="media-tag" aria-hidden="true">
               <b>逐梦之夏</b>
             </span>
           </div>
-          <div class="slide-body">
+          <!-- 滚入淡入：移动端逐屏滚动时内容渐显（桌面端由 .slide.active 的整屏渐显主导） -->
+          <div class="slide-body" v-reveal="1">
             <h3 class="slide-title">{{ s.title }}</h3>
             <p class="slide-desc">{{ s.desc }}</p>
             <ul class="slide-points">

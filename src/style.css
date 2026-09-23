@@ -552,8 +552,10 @@ main { position: relative; z-index: 1; }
   .showcase-counter { left: 22px; bottom: 34px; }
   .showcase-counter b { font-size: 18px; }
   .showcase-progress { left: 22px; bottom: 22px; width: 120px; }
-  .showcase-nav { right: 10px; gap: 14px; }
-  .showcase-nav button { padding: 6px 2px; }
+  /* 触控目标：圆点本体只有 9px，靠内边距把可点区域撑到 ~29px */
+  .showcase-nav { right: 4px; gap: 8px; }
+  .showcase-nav button { padding: 10px 8px; }
+  .showcase-nav .dot { width: 9px; height: 9px; }
   .showcase-nav .lbl { display: none; }
 
   /* 导航收进抽屉 */
@@ -585,10 +587,10 @@ main { position: relative; z-index: 1; }
   /* 单屏内容再压一档，保证小屏也能一屏装下（底部留出页码位置） */
   .slide { padding: clamp(76px, 11vh, 92px) 18px clamp(72px, 11vh, 96px); }
   .slide-media-wrap { margin-bottom: 16px; aspect-ratio: 16 / 9; }
-  .slide-desc { margin-top: 16px; font-size: 14px; }
+  .slide-desc { margin-top: 16px; font-size: 14px; line-height: 1.75; }
   .slide-points { margin-top: 14px; }
-  .slide-points li { padding: 7px 0; font-size: 13px; }
-  .slide-body .link-more { margin-top: 18px; }
+  .slide-points li { padding: 7px 0; font-size: 13.5px; line-height: 1.7; }
+  .slide-body .link-more { margin-top: 14px; padding: 8px 0; }
   .showcase-counter { left: 18px; }
   .showcase-progress { left: 18px; width: 104px; }
 
@@ -602,9 +604,9 @@ main { position: relative; z-index: 1; }
   .slide { padding: clamp(72px, 12vh, 84px) 18px clamp(64px, 11vh, 80px); }
   .slide-media-wrap { aspect-ratio: 21 / 9; margin-bottom: 14px; }
   .slide-title { font-size: clamp(26px, 7vw, 34px); }
-  .slide-desc { margin-top: 12px; font-size: 13px; }
+  .slide-desc { margin-top: 12px; font-size: 13px; line-height: 1.7; }
   .slide-points { margin-top: 10px; }
-  .slide-points li { padding: 5px 0; font-size: 12.5px; }
+  .slide-points li { padding: 5px 0; font-size: 12.5px; line-height: 1.6; }
   .slide-body .link-more { margin-top: 12px; }
   .showcase-counter { bottom: 28px; }
   .showcase-progress { bottom: 18px; }
@@ -622,6 +624,21 @@ main { position: relative; z-index: 1; }
 /* ---- 极矮窗口（横屏手机）：描述文案让位，优先保证标题与按钮落在首屏内 ---- */
 @media (max-height: 480px) {
   .hero-desc { display: none; }
+}
+
+/* ---- 动效偏好：用户系统开启「减弱动态效果」时，滚入淡入直接呈现终态 ---- */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .slide,
+  .slide.active,
+  .slide-media-wrap {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 /* ============ Quasar 组件适配（暖白社论主题统一） ============ */
