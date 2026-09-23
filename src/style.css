@@ -490,63 +490,43 @@ main { position: relative; z-index: 1; }
   .st-text { grid-column: 1; grid-row: 1; }
   .st-sub { grid-column: 1; grid-row: 2; }
 
-  /* 产品秀移动端：section 占满一屏，容器内部整屏吸附滚动（一屏一屏切）
-     注意：这里曾经把 .showcase / .showcase-inner 降级为 static，
-     导致四屏在文档流里按顺序铺开、失去逐屏效果，故改为吸附滚动方案。 */
-  .showcase-track { height: auto; }
+  /* 产品秀移动端：与桌面同机制 —— .showcase 吸顶、轨道 = 屏数 × 100dvh、
+     页面滚动进度切屏。这样每一屏都完整占满视口，上一屏（首屏）不会漏进当前屏。
+     （此前 mobile 用 relative + 内部 scroll-snap，section 在文档流里只是一块
+       100dvh 高的区域，页面滚动到一半时首屏底部会露在当前屏上方。）
+     与桌面的区别只在 slide 版式：图上文下、纵向排列。 */
   .showcase {
-    position: relative;
-    top: auto;
+    top: 0;
     height: 100svh;    /* 兜底：地址栏可见时的最小可视高 */
     height: 100dvh;    /* 当前窗口高度：地址栏收放时同步 */
-    overflow: hidden;
   }
-  /* 关键：容器自身成为吸附滚动区 */
-  .showcase-inner {
-    position: absolute;
-    inset: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scroll-snap-type: y mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .showcase-inner::-webkit-scrollbar { display: none; }
-  /* 纵向排列：图上文下；每屏高度 = 容器可视高，故一屏一屏吸附
-     用 min-height（而非 height）兜底：极矮机型上允许单屏内部继续滚动，不裁切内容
-     居中用 auto 外边距而非 justify-content:center —— 后者在内容超高时会把顶部顶出容器、滚不到 */
+  /* 小屏兜底：个别屏要点较多、内容超出一屏时，这一屏内部滚动，不裁切 */
   .slide {
-    position: relative;
-    inset: auto;
-    height: auto;
-    min-height: 100svh;
-    min-height: 100dvh;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    transition: none;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
     gap: 4px;
     padding: clamp(72px, 10vh, 92px) 22px clamp(76px, 11vh, 104px);
     max-width: 100%;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .slide::-webkit-scrollbar { display: none; }
   .slide-media-wrap {
     position: relative;
     right: auto;
     top: auto;
     transform: none;
     order: -1;
+    flex: none;
     width: 100%;
     max-width: 560px;
-    margin: auto auto 22px;
-    aspect-ratio: 16 / 10;
+    margin: auto auto 18px;
+    aspect-ratio: 16 / 9;
   }
   .slide.active .slide-media-wrap { animation: none; }
-  .slide-body { max-width: 100%; margin-bottom: auto; }
+  .slide-body { max-width: 100%; margin-bottom: auto; flex: none; }
   .slide-title { font-size: clamp(30px, 8.2vw, 42px); letter-spacing: 0.5px; }
   /* 页码与进度保留（贴底，避开正文），右侧圆点去掉文字标签免得压住内容 */
   .showcase-counter { left: 22px; bottom: 34px; }

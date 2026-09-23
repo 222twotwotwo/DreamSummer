@@ -141,43 +141,15 @@ const idx = ref(0);
 
 const pad = (n: number): string => String(n).padStart(2, '0');
 
-/* ---------- 滚动驱动 ----------
- * 桌面（>960px）：轨道高度 = 屏数 × 100dvh（由 --slide-count 驱动），section 吸顶，
- *   轨道内滚动进度决定当前 slide。
- * 移动（≤960px）：section 自身高度 = 一屏，.showcase-inner 变成整屏吸附滚动区
- *   （CSS scroll-snap），一屏一屏切换，与桌面观感一致；不再把多屏铺开。
- * 两种模式都用同一套 idx / 圆点 / 页码。 */
+/* ---------- 滚动驱动（桌面与移动端同一套机制） ----------
+ * .showcase 吸顶、轨道高度 = 屏数 × 100dvh（--slide-count 驱动），
+ * 页面滚动进度决定当前 slide。这样每一屏都完整占满视口，
+ * 上一屏（首屏）不会漏进当前屏里。
+ * 移动端与桌面的区别只在 slide 版式（图上文下），不在滚动机制。 */
 const rootEl = ref<HTMLElement | null>(null);
-const innerEl = ref<HTMLElement | null>(null);
 let ticking = false;
 
-function isDesktop(): boolean {
-  return window.innerWidth > 960;
-}
-
-/** 移动端：找出当前贴在容器顶部的 slide 序号 */
-function updateMobileIdx(): void {
-  const inner = innerEl.value;
-  if (!inner) return;
-  const nodes = inner.querySelectorAll<HTMLElement>('.slide');
-  if (!nodes.length) return;
-  let best = 0;
-  let bestDist = Number.POSITIVE_INFINITY;
-  nodes.forEach((el, i) => {
-    const dist = Math.abs(el.offsetTop - inner.scrollTop);
-    if (dist < bestDist) {
-      bestDist = dist;
-      best = i;
-    }
-  });
-  idx.value = Math.min(slides.length - 1, best);
-}
-
 function updateFromScroll(): void {
-  if (!isDesktop()) {
-    updateMobileIdx();
-    return;
-  }
   const track = rootEl.value;
   if (!track) return;
   const rect = track.getBoundingClientRect();
@@ -197,17 +169,8 @@ function onScroll(): void {
   });
 }
 
-/* 圆点直达：桌面滚页面到对应进度中点；移动端滚动吸附容器到对应 slide 顶部 */
+/* 圆点 / 导航直达：滚页面到该屏在轨道中的进度中点 */
 function scrollToSlide(n: number): void {
-  if (!isDesktop()) {
-    const inner = innerEl.value;
-    const target = inner?.querySelectorAll<HTMLElement>('.slide')[n];
-    if (inner && target) {
-      inner.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
-    }
-    idx.value = n;
-    return;
-  }
   const track = rootEl.value;
   if (!track) return;
   const rect = track.getBoundingClientRect();
@@ -215,9 +178,6 @@ function scrollToSlide(n: number): void {
   const top = window.scrollY + rect.top + ((n + 0.5) / slides.length) * total;
   window.scrollTo({ top, behavior: 'smooth' });
 }
-
-/** 吸附滚动容器的 DOM 引用：onUnmounted 时模板 ref 可能已清空，故单独留存 */
-let innerNode: HTMLElement | null = null;
 
 /** 站内任意带 data-slide="n" 的链接 / 按钮 → 跳到第 n 屏（导航与首屏按钮复用同一入口） */
 function onDocClick(ev: MouseEvent): void {
@@ -235,9 +195,6 @@ watch(idx, (v) => { showcaseIndex.value = v; });
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
-  // 移动端：吸附滚动发生在 .showcase-inner 内部，页面滚动事件不会触发
-  innerNode = innerEl.value;
-  innerNode?.addEventListener('scroll', onScroll, { passive: true });
   document.addEventListener('click', onDocClick);
   showcaseTotal.value = slides.length;
   registerShowcaseJump(scrollToSlide);
@@ -247,9 +204,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
   window.removeEventListener('resize', onScroll);
-  innerNode?.removeEventListener('scroll', onScroll);
   document.removeEventListener('click', onDocClick);
-  innerNode = null;
   registerShowcaseJump(null);
 });
 </script>
@@ -261,7 +216,7 @@ onUnmounted(() => {
     :style="{ '--slide-count': slides.length }"
   >
     <section id="showcase" class="showcase">
-      <div ref="innerEl" class="showcase-inner">
+      <div class="showcase-inner">
         <article
           v-for="(s, i) in slides"
           :key="s.num"
