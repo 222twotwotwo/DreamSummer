@@ -185,8 +185,6 @@ body {
   letter-spacing: 2px;
   text-indent: 2px;
 }
-.hero-slogan { margin-top: clamp(12px, 2.4vh, var(--sp-3)); font-size: clamp(14px, min(2.2vw, 2.4vh), 19px); color: var(--text); font-weight: 600; letter-spacing: 1px; }
-.hero-desc { margin: clamp(8px, 1.8vh, 20px) auto 0; max-width: 72ch; color: var(--dim); font-size: clamp(13px, min(1.05vw, 1.9vh), 15px); }
 .hero-actions { margin-top: clamp(18px, 5vh, var(--sp-4)); display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 .arr { font-style: normal; }
 
@@ -562,8 +560,6 @@ main { position: relative; z-index: 1; }
   /* Hero 单列紧凑 */
   .hero { padding: clamp(76px, 11vh, 100px) 18px clamp(30px, 6.6vh, 56px); }
   .hero-title { font-size: clamp(34px, min(13vw, 11vh), 60px); letter-spacing: 2px; text-indent: 2px; }
-  .hero-slogan { font-size: clamp(14px, min(4vw, 2.4vh), 15px); }
-  .hero-desc { font-size: clamp(13px, min(3.7vw, 2vh), 14px); }
   .hero-actions { flex-direction: column; align-items: stretch; gap: 10px; margin-top: clamp(16px, 4vh, 32px); }
   .hero-actions .q-btn { width: 100%; }
   .hero-actions .btn { padding: 13px 28px; font-size: 15px; }
@@ -602,15 +598,9 @@ main { position: relative; z-index: 1; }
 /* ---- 矮窗口压缩（横屏手机 / 小屏笔电）：把首屏内容再压一档，确保一屏装下 ---- */
 @media (max-height: 620px) and (min-width: 601px) {
   .hero { padding-top: clamp(72px, 12vh, 110px); padding-bottom: clamp(24px, 5vh, 48px); }
-  .hero-slogan, .hero-desc { margin-top: 8px; }
   .hero-actions { margin-top: 14px; }
   .hero-stats { margin-top: 14px; }
   .hero-waves, .scroll-hint { display: none; }
-}
-
-/* ---- 极矮窗口（横屏手机）：描述文案让位，优先保证标题与按钮落在首屏内 ---- */
-@media (max-height: 480px) {
-  .hero-desc { display: none; }
 }
 
 /* ---- 动效偏好：用户系统开启「减弱动态效果」时，滚入淡入直接呈现终态 ---- */

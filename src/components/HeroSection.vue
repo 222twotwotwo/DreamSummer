@@ -22,11 +22,6 @@ const stats = [
     </svg>
     <div class="hero-content">
       <h1 class="hero-title">逐梦之夏</h1>
-      <p class="hero-slogan">课题项目招标 · 学习意愿考核 · 人才招募与项目孵化</p>
-      <p class="hero-desc">
-        以项目招标为入口、以学习考核为标尺、以人才招募为目的、以项目孵化为主线——
-        让你在真实课题中学习、试错、产出，实验室在过程中观察、筛选、孵化。
-      </p>
       <div class="hero-actions">
         <q-btn unelevated no-caps color="accent" href="#showcase" data-slide="9" class="btn q-px-xl">浏览课题 · 立即申请</q-btn>
         <q-btn outline no-caps color="secondary" href="#showcase" data-slide="5" class="btn btn-ghost q-px-xl">了解流程 <i class="arr q-ml-sm">↓</i></q-btn>
