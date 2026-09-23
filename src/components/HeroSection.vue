@@ -28,8 +28,8 @@ const stats = [
         让你在真实课题中学习、试错、产出，实验室在过程中观察、筛选、孵化。
       </p>
       <div class="hero-actions">
-        <q-btn unelevated no-caps color="accent" href="#join" class="btn q-px-xl">浏览课题 · 立即申请</q-btn>
-        <q-btn outline no-caps color="secondary" href="#flow" class="btn btn-ghost q-px-xl">了解流程 <i class="arr q-ml-sm">↓</i></q-btn>
+        <q-btn unelevated no-caps color="accent" href="#showcase" data-slide="9" class="btn q-px-xl">浏览课题 · 立即申请</q-btn>
+        <q-btn outline no-caps color="secondary" href="#showcase" data-slide="5" class="btn btn-ghost q-px-xl">了解流程 <i class="arr q-ml-sm">↓</i></q-btn>
       </div>
     </div>
     <div class="hero-stats">

@@ -243,50 +243,21 @@ body {
 
 /* ---- 通用 Section 头部（眉标已移除，统一单栏左对齐） ---- */
 main { position: relative; z-index: 1; }
-.section {
-  max-width: 1760px;
-  margin: 0 auto;
-  padding: var(--section-y) clamp(24px, 5vw, 88px) 30px;
-}
-.sec-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  row-gap: 0;
-  align-items: start;
-  text-align: left;
-  padding-top: var(--sp-3);
-  border-top: 1px solid var(--line);
-}
-.sec-title {
-  grid-column: 1; grid-row: 1;
-  font-family: var(--font-serif);
-  font-size: clamp(30px, 3.6vw, 44px);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  line-height: 1.25;
-}
-.sec-desc {
-  grid-column: 1; grid-row: 2;
-  color: var(--dim);
-  margin-top: var(--sp-3);
-  font-size: 15px;
-  max-width: 72ch;
-}
 
 .reveal { opacity: 0; transform: translateY(36px); transition: opacity .8s ease, transform .8s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 
-/* 注：原 .cards-4 / .card / .card-num / .card-en 一套是历史遗留样式，
-   GoalsSection 实际用的是 .goal-row / .goal-item，模板中已无任何元素带 card 类，
-   故整块删除（2026-09-20 经脚本扫描确认零引用）。 */
+/* 注：活动目标 / 核心流程 / 时间安排 / 网站模块 / 考核激励 / 加入我们
+   已作为第 05–10 屏并入 ProductShowcase，对应区块样式一并移除。 */
 
 /* ---- 产品秀（米哈游式全屏逐屏切换） ---- */
-/* 400vh 滚动轨道：section 吸顶，轨道内滚动进度推进 slide，
-   走完第 4 屏后页面才继续向下滚动 */
+/* 吸顶滚动轨道：section 吸顶，轨道内滚动进度推进 slide，
+   走完全部屏数后页面才继续向下滚动 */
 .showcase-track {
   position: relative;
-  height: 400vh;      /* 老浏览器兜底 */
-  height: 400dvh;     /* 4 屏滚动距离：走完第 4 屏页面才继续向下 */
+  /* 高度 = 屏数 × 100dvh，--slide-count 由组件内联注入（当前 10 屏） */
+  height: calc(var(--slide-count, 10) * 100vh);   /* 老浏览器兜底 */
+  height: calc(var(--slide-count, 10) * 100dvh);
 }
 /* 吸顶一屏：高度锁死当前可见窗口高度（dvh 随移动端地址栏收放同步），
    顶部 69px 让给固定导航，slide 内部 padding-top 已留出等量空间。 */
@@ -336,6 +307,8 @@ main { position: relative; z-index: 1; }
   border-bottom: 1px solid var(--line-soft);
 }
 .slide-body .link-more { display: inline-block; margin-top: clamp(14px, 3.2vh, 26px); }
+/* 末屏行动按钮（加入我们） */
+.slide-body .slide-cta { margin-top: clamp(16px, 3.4vh, 28px); }
 
 /* 右侧主题图片卡（1px 描边替代投影，去色暖化） */
 .slide-media-wrap {
@@ -483,143 +456,6 @@ main { position: relative; z-index: 1; }
   font-size: 15px;
   max-width: 72ch;
 }
-
-/* ---- 目标（编号 = 金黄衬线数字） ---- */
-.goals { margin-top: var(--sp-5); display: grid; gap: 0; border-top: 1px solid var(--line); }
-.goal-row { display: grid; grid-template-columns: 1fr 1fr; }
-.goal-item {
-  display: flex; gap: 24px; align-items: flex-start;
-  padding: 40px 32px;
-  border-bottom: 1px solid var(--line);
-  transition: background .25s, border-color .3s;
-}
-.goal-row .goal-item:first-child { border-right: 1px solid var(--line); }
-.goal-item:hover { background: var(--card); }
-.goal-item span {
-  font-family: var(--font-serif);
-  font-size: 26px;
-  line-height: 1;
-  color: var(--sun);
-  font-weight: 700;
-  padding-top: 3px;
-  letter-spacing: 0.5px;
-}
-.goal-item h4 { font-family: var(--font-serif); font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
-.goal-item p { color: var(--dim); font-size: 14px; margin-top: 6px; }
-
-/* ---- 流程：S 形编号流程图（参考开源之夏） ---- */
-.snake-wrap {
-  position: relative;
-  max-width: 1000px;
-  margin: var(--sp-5) auto 0;
-  aspect-ratio: 1000 / 630;
-}
-.snake-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.snake-dash { stroke: var(--line-strong); stroke-width: 2; stroke-dasharray: 7 8; fill: none; }
-.snake-head { fill: var(--line-strong); }
-.snake-node { fill: var(--line-strong); }
-.snake-item { position: absolute; width: 38%; height: 22.22%; }
-.snake-item-1 { left: 6%; top: 3.2%; }
-.snake-item-2 { left: 56%; top: 3.2%; }
-.snake-item-3 { left: 56%; top: 74.6%; }
-.snake-item-4 { left: 6%; top: 74.6%; }
-.snake-card {
-  height: 100%;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--card);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center;
-  padding: 18px 28px;
-  gap: 8px;
-  transition: border-color .3s;
-}
-.snake-card:hover { border-color: var(--line-strong); }
-.snake-card h3 { font-family: var(--font-serif); font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
-.snake-card p { color: var(--dim); font-size: 13px; line-height: 1.7; }
-.snake-badge {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px; height: 38px;
-  background: var(--accent);
-  color: var(--on-dark);
-  font-size: 13px; font-weight: 700;
-  display: grid; place-items: center;
-  padding-bottom: 10px;
-  clip-path: polygon(0 0, 100% 0, 100% 68%, 50% 100%, 0 68%);
-  letter-spacing: 1px;
-}
-/* 第一行徽章在卡片下方，第二行徽章在卡片上方（形成 S 形走向） */
-.snake-item-1 .snake-badge, .snake-item-2 .snake-badge { top: 117.9%; }
-.snake-item-3 .snake-badge, .snake-item-4 .snake-badge { bottom: 132.1%; }
-
-/* ---- 时间轴：改用 QTimeline，见文件末尾 Quasar 适配 ---- */
-
-/* ---- 网站模块 ---- */
-.modules { margin-top: var(--sp-5); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--grid-row-gap) var(--grid-col-gap); }
-.mod {
-  padding: 30px 28px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background: var(--card);
-  display: flex; flex-direction: column; gap: 8px;
-  transition: border-color .3s;
-}
-.mod:hover { border-color: var(--line-strong); }
-.mod b { font-family: var(--font-serif); font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-.mod span { color: var(--dim); font-size: 13px; }
-
-/* ---- 考核 ---- */
-.assess-grid { margin-top: var(--sp-5); display: grid; grid-template-columns: 1.25fr 1fr; gap: var(--sp-3); align-items: start; }
-.assess-table-wrap { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--card); }
-.assess-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.assess-table th {
-  text-align: left; padding: 15px 20px;
-  background: var(--accent-soft);
-  color: var(--dim); font-size: 12px; letter-spacing: 1px; font-weight: 600;
-}
-.assess-table td { padding: 14px 20px; border-top: 1px solid var(--line-soft); color: var(--dim); }
-.assess-table td:first-child { color: var(--text); font-weight: 600; }
-.assess-side { display: flex; flex-direction: column; gap: 20px; }
-.path, .inc {
-  padding: 28px; border-radius: var(--radius);
-  border: 1px solid var(--line); background: var(--card);
-  transition: border-color .3s;
-}
-.path:hover, .inc:hover { border-color: var(--line-strong); }
-.path h4 { font-family: var(--font-serif); font-size: 15px; font-weight: 700; margin-bottom: 18px; letter-spacing: 0.5px; }
-.path-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13.5px; }
-.path-flow span { padding: 5px 13px; border-radius: var(--radius); border: 1px solid var(--line); color: var(--dim); }
-.path-flow i { color: var(--text); font-style: normal; }
-.path-flow .hl { background: var(--accent-soft); color: var(--text); font-weight: 700; border-color: transparent; }
-.inc { display: flex; flex-direction: column; gap: 4px; padding: 22px 26px; }
-.inc b { font-family: var(--font-serif); font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
-.inc span { color: var(--dim); font-size: 13px; }
-
-/* ---- Join（深色反转区 #2C2117，形成 深(hero尾) → 浅 → 深(statement/join) 节奏） ---- */
-.join { padding-bottom: 160px; }
-.join-card {
-  text-align: center;
-  padding: 120px 30px;
-  border: 1px solid var(--on-dark-line);
-  background: url('./images/bg-join.jpg') center / cover no-repeat;
-  position: relative;
-  overflow: hidden;
-}
-.join-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(44, 33, 23, 0.86);
-  backdrop-filter: grayscale(0.5) sepia(0.1);
-  -webkit-backdrop-filter: grayscale(0.5) sepia(0.1);
-}
-.join-card > * { position: relative; z-index: 1; }
-.join-card .sec-title { color: var(--on-dark); }
-.join-card .sec-desc { color: var(--on-dark-dim); max-width: 72ch; margin-left: auto; margin-right: auto; }
-.join-actions { margin-top: var(--sp-4); display: flex; gap: 28px; justify-content: center; align-items: center; flex-wrap: wrap; }
 .link-more {
   font-size: 14px;
   color: var(--text);
@@ -633,10 +469,6 @@ main { position: relative; z-index: 1; }
   text-decoration-thickness: 2px;
   text-underline-offset: 5px;
 }
-.join-card .link-more { color: var(--on-dark); }
-.join-card .link-more i { color: var(--sun); }
-.join-note { margin-top: 38px; color: var(--dim); font-size: 12.5px; letter-spacing: 0.5px; }
-.join-card .join-note { color: var(--on-dark-dim); }
 
 /* ---- Footer ---- */
 .footer {
@@ -654,11 +486,9 @@ main { position: relative; z-index: 1; }
 
 /* ---- 响应式 ---- */
 @media (max-width: 960px) {
-  /* 两栏头部与两栏陈述本就已单栏，这里兜底保持一列 */
-  .sec-head, .statement { grid-template-columns: 1fr; }
-  .sec-title, .st-text { grid-column: 1; grid-row: 1; }
+  .statement { grid-template-columns: 1fr; }
+  .st-text { grid-column: 1; grid-row: 1; }
   .st-sub { grid-column: 1; grid-row: 2; }
-  .sec-desc { grid-column: 1; grid-row: 2; }
 
   /* 产品秀移动端：section 占满一屏，容器内部整屏吸附滚动（一屏一屏切）
      注意：这里曾经把 .showcase / .showcase-inner 降级为 static，
@@ -730,40 +560,15 @@ main { position: relative; z-index: 1; }
   .nav-links, .nav > .nav-inner > .nav-cta { display: none; }
   .nav-burger { display: flex; }
 
-  /* 网格降级 */
-  .modules { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .assess-grid { grid-template-columns: 1fr; gap: 18px; }
-
   /* Hero 紧凑化 */
   .hero { padding: clamp(80px, 12vh, 118px) 22px clamp(40px, 8vh, 64px); }
   .hero-content { margin-top: 0; }
   .hero-stats { position: static; transform: none; margin-top: clamp(20px, 4.4vh, 48px); flex-wrap: wrap; justify-content: center; }
   .stat { padding: 0 20px; }
-
-  /* 区块留白收紧 */
-  .section { padding-top: 96px; }
-  .modules, .goals, .assess-grid, .timeline--q { margin-top: 52px; }
-  .snake-wrap { margin-top: 56px; }
-
-  /* 表格窄屏横向滚动，避免挤压变形 */
-  .assess-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .assess-table { min-width: 520px; }
-
-  .join-card { padding: 84px 22px; }
   .statement { padding: 110px 22px; }
   .footer { padding: 52px 18px; }
 }
-/* S 形流程图移动端降级为纵向排列 */
-@media (max-width: 720px) {
-  .snake-wrap { aspect-ratio: auto; display: flex; flex-direction: column; gap: 26px; }
-  .snake-svg { display: none; }
-  .snake-item { position: static; width: auto; height: auto; }
-  .snake-card { height: auto; padding: 18px 16px; }
-  .snake-badge { position: static; transform: none; margin: 0 auto 12px; }
-}
 @media (max-width: 600px) {
-  .goal-row, .modules { grid-template-columns: 1fr; }
-  .goal-row .goal-item:first-child { border-right: none; }
 
   /* Hero 单列紧凑 */
   .hero { padding: clamp(76px, 11vh, 100px) 18px clamp(30px, 6.6vh, 56px); }
@@ -776,9 +581,6 @@ main { position: relative; z-index: 1; }
   .stat { padding: 0 13px; }
   .stat b { font-size: 13px; }
   .stat i { font-size: 10px; letter-spacing: 1px; }
-
-  /* 区块与标题 */
-  .section { padding: 84px 18px 20px; }
   .statement { padding: 88px 18px; }
   /* 单屏内容再压一档，保证小屏也能一屏装下（底部留出页码位置） */
   .slide { padding: clamp(76px, 11vh, 92px) 18px clamp(72px, 11vh, 96px); }
@@ -789,14 +591,6 @@ main { position: relative; z-index: 1; }
   .slide-body .link-more { margin-top: 18px; }
   .showcase-counter { left: 18px; }
   .showcase-progress { left: 18px; width: 104px; }
-
-  /* 卡片内边距 */
-  .mod { padding: 24px 20px; }
-  .goal-item { padding: 26px 18px; }
-  .goal-item h4 { font-size: 16px; }
-  .path, .inc { padding: 22px 18px; }
-  .join-card { padding: 68px 18px; }
-  .join-actions { gap: 14px; margin-top: 32px; }
 
   /* 角条与波浪更轻量 */
   .hero-corner-tag { padding: 6px 12px 7px; }
@@ -839,7 +633,6 @@ main { position: relative; z-index: 1; }
   transition: background .2s, transform .2s;
 }
 .q-btn.bg-accent:hover { background: var(--sun-deep) !important; transform: translateY(-2px); }
-.q-timeline .text-accent { color: var(--sun) !important; }
 .text-accent { color: var(--sun) !important; }
 
 /* 导航 */
@@ -853,36 +646,8 @@ main { position: relative; z-index: 1; }
 
 /* 按钮（直角） */
 .btn.q-btn { border-radius: var(--radius); }
-.join-actions .q-btn { border-radius: var(--radius); }
+.slide-cta.q-btn { border-radius: var(--radius); }
 
 /* 卡片 */
 .q-card { background: var(--card); color: var(--text); border-radius: var(--radius); }
 .q-card--bordered { border: 1px solid var(--line) !important; box-shadow: none; }
-
-/* 时间轴（QTimeline） */
-.timeline--q { margin-top: var(--sp-5); max-width: 1120px; margin-left: auto; margin-right: auto; }
-.q-timeline { padding-left: 8px; }
-.q-timeline__subtitle {
-  color: var(--dim);
-  opacity: 1;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: none;
-  margin-bottom: 2px;
-}
-.q-timeline__title { font-family: var(--font-serif); font-size: 18px; font-weight: 700; letter-spacing: 0.5px; color: var(--text); }
-.tl-desc { color: var(--dim); font-size: 14px; margin-top: 4px; }
-
-/* 模块卡片 */
-.mod .q-card__section { display: flex; flex-direction: column; gap: 8px; height: 100%; }
-.mod-icon { color: var(--text); }
-.mod-name { font-family: var(--font-serif); font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-.mod-desc { color: var(--dim); font-size: 13px; }
-
-/* 考核区（表头样式已在上方统一为米色 --accent-soft） */
-.assess-table td { padding: 14px 20px; color: var(--dim); font-size: 14px; }
-.inc-inner { display: flex; gap: 12px; align-items: flex-start; }
-.inc-icon { color: var(--text); margin-top: 3px; }
-.inc b { font-size: 15px; letter-spacing: 0.5px; display: block; }
-.inc span { color: var(--dim); font-size: 13px; }

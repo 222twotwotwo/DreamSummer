@@ -3,13 +3,10 @@ import SiteNav from './components/SiteNav.vue';
 import HeroSection from './components/HeroSection.vue';
 import ProductShowcase from './components/ProductShowcase.vue';
 import StatementBlock from './components/StatementBlock.vue';
-import GoalsSection from './components/GoalsSection.vue';
-import FlowSection from './components/FlowSection.vue';
-import TimelineSection from './components/TimelineSection.vue';
-import ModulesSection from './components/ModulesSection.vue';
-import AssessSection from './components/AssessSection.vue';
-import JoinSection from './components/JoinSection.vue';
 import SiteFooter from './components/SiteFooter.vue';
+
+/* 活动目标 / 核心流程 / 时间安排 / 网站模块 / 考核激励 / 加入我们
+   已作为第 05–10 屏并入 ProductShowcase，见 components/ProductShowcase.vue */
 </script>
 
 <template>
@@ -21,12 +18,6 @@ import SiteFooter from './components/SiteFooter.vue';
         <main>
           <ProductShowcase />
           <StatementBlock />
-          <GoalsSection />
-          <FlowSection />
-          <TimelineSection />
-          <ModulesSection />
-          <AssessSection />
-          <JoinSection />
         </main>
         <SiteFooter />
       </q-page>

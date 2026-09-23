@@ -1,39 +1,37 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { showcaseIndex } from '../composables/showcase';
 
+/* 全部内容已并入「活动全景」的 10 屏，导航即各屏的快捷入口：
+   slide 为该屏序号（0 起），点击后交给活动全景做平滑滚动定位。 */
 const links = [
-  { href: '#showcase', label: '活动全景' },
-  { href: '#goals', label: '活动目标' },
-  { href: '#flow', label: '核心流程' },
-  { href: '#timeline', label: '时间安排' },
-  { href: '#modules', label: '网站模块' },
-  { href: '#assess', label: '考核激励' }
+  { slide: 0, label: '活动全景' },
+  { slide: 4, label: '活动目标' },
+  { slide: 5, label: '核心流程' },
+  { slide: 6, label: '时间安排' },
+  { slide: 7, label: '网站模块' },
+  { slide: 8, label: '考核激励' }
 ];
 
 const scrolled = ref(false);
 const drawer = ref(false);
-const activeHref = ref('');
 
 const onScroll = (): void => {
   scrolled.value = window.scrollY > 40;
 };
 
+/** 当前所处屏 → 高亮对应导航项（取最后一个入口序号 ≤ 当前屏的项） */
+const activeIndex = computed(() => {
+  let cur = -1;
+  links.forEach((l, i) => {
+    if (showcaseIndex.value >= l.slide) cur = i;
+  });
+  return cur;
+});
+
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-
-  // 滚动高亮当前区块
-  const sectionObserver = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        const id = `#${entry.target.getAttribute('id')}`;
-        if (links.some((l) => l.href === id)) activeHref.value = id;
-      }
-    },
-    { rootMargin: '-40% 0px -55% 0px' }
-  );
-  document.querySelectorAll('.section, .showcase').forEach((sec) => sectionObserver.observe(sec));
 });
 
 onUnmounted(() => window.removeEventListener('scroll', onScroll));
@@ -42,27 +40,29 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll));
 <template>
   <q-header class="nav" :class="{ scrolled }">
     <q-toolbar class="nav-inner">
-      <a class="logo" href="#hero">
+      <a class="logo" href="#showcase" data-slide="0">
         <span class="logo-text">逐梦之夏</span>
       </a>
       <q-space class="nav-space" />
       <nav class="nav-links">
         <q-btn
-          v-for="l in links"
-          :key="l.href"
+          v-for="(l, i) in links"
+          :key="l.label"
           flat
           no-caps
           :ripple="false"
-          :href="l.href"
+          href="#showcase"
+          :data-slide="l.slide"
           class="nav-link"
-          :class="{ active: activeHref === l.href }"
+          :class="{ active: activeIndex === i }"
         >{{ l.label }}</q-btn>
       </nav>
       <q-btn
         unelevated
         no-caps
         color="accent"
-        href="#join"
+        href="#showcase"
+        data-slide="9"
         class="nav-cta q-px-lg"
       >立即申请</q-btn>
       <q-btn
@@ -80,10 +80,11 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll));
     <q-list padding class="nav-drawer-list">
       <q-item
         v-for="l in links"
-        :key="l.href"
+        :key="l.label"
         clickable
         tag="a"
-        :href="l.href"
+        href="#showcase"
+        :data-slide="l.slide"
         @click="drawer = false"
       >
         <q-item-section>{{ l.label }}</q-item-section>
@@ -94,7 +95,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll));
       unelevated
       no-caps
       color="accent"
-      href="#join"
+      href="#showcase"
+      :data-slide="9"
       class="q-mx-md"
       style="width: calc(100% - 32px)"
       @click="drawer = false"
