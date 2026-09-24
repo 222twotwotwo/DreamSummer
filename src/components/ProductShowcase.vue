@@ -164,7 +164,7 @@ function updateFromScroll(): void {
  * showcase 吸顶期间接管滚轮：一格滚轮完整切换一屏，冷却期内忽略
  * 触控板 / 鼠标惯性，动画未结束时不再累计。首屏向上、末屏向下时
  * 不拦截，交还原生滚动，让页面自然进出本区块。
- * 移动端触摸滚动不受影响，仍走原生滚动 + 进度换算。 */
+ * 移动端触摸同手感，见下方触摸翻屏段。 */
 const WHEEL_COOLDOWN = 780;   // 一屏动画 + 余量，期间忽略惯性
 const WHEEL_MIN_DELTA = 12;   // 过滤微小抖动
 let wheelUnlockedAt = 0;
@@ -214,6 +214,65 @@ function onKeyDown(e: KeyboardEvent): void {
   scrollToSlide(target);
 }
 
+/* ---------- 移动端触摸翻屏（一格 = 一屏，与滚轮同手感）----------
+ * 吸顶期间接管单指纵向滑动：松手时按滑动距离 / 速度判定翻一屏，
+ * 冷却期内忽略连滑。首屏下滑、末屏上滑放行原生滚动进出区块。
+ * 例外（交还原生触摸滚动，不接管）：
+ *  1. 当前屏内容超高（.slide 内部滚动兜底，见移动端 CSS）；
+ *  2. 横向滑动手势（|dy| 不明显大于 |dx|）；
+ *  3. 多指手势（捏合缩放等）。 */
+const TOUCH_DRAG_DIST = 56;    // 拖拽翻屏阈值 px
+const TOUCH_FLICK_DIST = 20;   // 快扫最小距离
+const TOUCH_FLICK_SPEED = 0.55; // 快扫速度阈值 px/ms
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartT = 0;
+let touchLocked = true; // touchstart 前视为锁定，防误判
+
+/* 当前活动屏是否需要内部滚动（内容超高 → 不接管触摸） */
+function activeSlideScrollable(): boolean {
+  const track = rootEl.value;
+  if (!track) return true;
+  const slide = track.querySelectorAll<HTMLElement>('.slide')[idx.value];
+  if (!slide) return true;
+  return slide.scrollHeight > slide.clientHeight + 1;
+}
+
+function onTouchStart(e: TouchEvent): void {
+  if (e.touches.length !== 1) { touchLocked = true; return; }
+  touchLocked = false;
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  touchStartT = Date.now();
+}
+
+function onTouchMove(e: TouchEvent): void {
+  if (touchLocked || e.touches.length !== 1 || !isPinned() || activeSlideScrollable()) return;
+  const t = e.touches[0];
+  const dx = Math.abs(t.clientX - touchStartX);
+  const dy = Math.abs(t.clientY - touchStartY);
+  if (dx >= dy) return; // 横向手势不碰
+  const target = idx.value + (t.clientY < touchStartY ? 1 : -1);
+  if (target < 0 || target >= slides.length) return; // 边界放行原生滚动
+  e.preventDefault(); // 纵向手势交给 touchend 翻屏，原生滚动不得破坏吸附
+}
+
+function onTouchEnd(e: TouchEvent): void {
+  if (touchLocked || !isPinned() || activeSlideScrollable()) return;
+  const t = e.changedTouches[0];
+  if (!t) return;
+  const dy = touchStartY - t.clientY;
+  const dist = Math.abs(dy);
+  const speed = dist / Math.max(Date.now() - touchStartT, 1);
+  if (dist < TOUCH_DRAG_DIST && !(dist >= TOUCH_FLICK_DIST && speed >= TOUCH_FLICK_SPEED)) return;
+  const target = idx.value + (dy > 0 ? 1 : -1);
+  if (target < 0 || target >= slides.length) return;
+  const now = Date.now();
+  if (now < wheelUnlockedAt) return; // 冷却期：翻屏动画未结束不再累计
+  wheelUnlockedAt = now + WHEEL_COOLDOWN;
+  scrollToSlide(target);
+}
+
 function onScroll(): void {
   if (ticking) return;
   ticking = true;
@@ -251,6 +310,9 @@ onMounted(() => {
   window.addEventListener('resize', onScroll, { passive: true });
   window.addEventListener('wheel', onWheel, { passive: false });
   window.addEventListener('keydown', onKeyDown);
+  window.addEventListener('touchstart', onTouchStart, { passive: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: false });
+  window.addEventListener('touchend', onTouchEnd, { passive: true });
   document.addEventListener('click', onDocClick);
   showcaseTotal.value = slides.length;
   registerShowcaseJump(scrollToSlide);
@@ -262,6 +324,9 @@ onUnmounted(() => {
   window.removeEventListener('resize', onScroll);
   window.removeEventListener('wheel', onWheel);
   window.removeEventListener('keydown', onKeyDown);
+  window.removeEventListener('touchstart', onTouchStart);
+  window.removeEventListener('touchmove', onTouchMove);
+  window.removeEventListener('touchend', onTouchEnd);
   document.removeEventListener('click', onDocClick);
   registerShowcaseJump(null);
 });
